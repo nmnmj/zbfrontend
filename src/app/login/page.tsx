@@ -14,7 +14,7 @@ export default function LoginPage() {
 
   const submit = async () => {
     try {
-      const res = await apiFetch("/auth/login", {
+      const res = await apiFetch("/api/auth/login", {
         method: "POST",
         body: JSON.stringify({ email, password })
       });
@@ -41,7 +41,7 @@ export default function LoginPage() {
       )}
 
       <h1 className="text-2xl font-bold">Login</h1>
-
+      
       <input
         className="input"
         placeholder="Email"

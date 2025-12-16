@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { apiFetch } from "../../../lib/api";
+import { backendFetch } from "../../../lib/backendFetch";
+import Toast from "@/app/component/Toast";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -12,18 +13,40 @@ export default function RegisterPage() {
     email: "",
     password: ""
   });
+  const [toastMessage, setToastMessage] = useState("");
 
   const submit = async () => {
-    const res = await apiFetch("/auth/register", {
-      method: "POST",
-      body: JSON.stringify(form)
-    });
+    try {
+      const data = await backendFetch("/auth/register", {
+        method: "POST",
+        body: JSON.stringify(form)
+      });
 
-    if (res.ok) router.push("/login");
+      // ✅ show backend message
+      setToastMessage(data.message || "Registered successfully");
+
+      // ✅ redirect after 2 seconds
+      setTimeout(() => {
+        router.push("/login");
+      }, 2000);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setToastMessage(err.message);
+      } else {
+        setToastMessage("Registration failed");
+      }
+    }
   };
 
   return (
     <div className="max-w-md mx-auto mt-20 space-y-4">
+      {toastMessage && (
+        <Toast
+          message={toastMessage}
+          onClose={() => setToastMessage("")}
+        />
+      )}
+
       <h1 className="text-2xl font-bold">Register</h1>
 
       <input
@@ -51,11 +74,13 @@ export default function RegisterPage() {
         }
       />
 
-      <button className="bg-blue-600 text-white px-4 py-2 rounded" onClick={submit}>
+      <button
+        className="bg-blue-600 text-white px-4 py-2 rounded"
+        onClick={submit}
+      >
         Register
       </button>
 
-      {/* ✅ Login Redirect */}
       <p className="text-sm text-center">
         Already have an account?{" "}
         <Link href="/login" className="text-blue-600 underline">

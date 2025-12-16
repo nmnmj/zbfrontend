@@ -1,22 +1,21 @@
-export async function apiFetch(
-endpoint: string,
-options: RequestInit = {}
-) {
-const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}${endpoint}`, {
-...options,
-headers: {
-'Content-Type': 'application/json',
-...(options.headers || {}),
-},
-credentials: 'include',
-})
+export const apiFetch = async (
+  path: string,
+  options: RequestInit = {}
+) => {
+  const res = await fetch(path, {
+    ...options,
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      ...(options.headers || {})
+    }
+  });
 
+  const data = await res.json();
 
-if (!res.ok) {
-const error = await res.json()
-throw new Error(error.message || 'Request failed')
-}
+  if (!res.ok) {
+    throw new Error(data.message || "Request failed");
+  }
 
-
-return res.json()
-}
+  return data;
+};
