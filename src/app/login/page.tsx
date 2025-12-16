@@ -21,9 +21,12 @@ export default function LoginPage() {
 
       setToastMessage(res.message);
       router.push("/dashboard");
-    } catch (error: any) {
-      // ❌ show error message
-      setToastMessage(error.message || "Invalid credentials");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setToastMessage(err.message);
+      } else {
+        setToastMessage("Something went wrong");
+      }
     }
   };
 
